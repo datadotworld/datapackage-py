@@ -11,4 +11,6 @@ env:
     - TOXENV=py35
 install:
   - pip install tox coveralls
-script: tox
+script:
+  - tox
+  - tox -e lint
