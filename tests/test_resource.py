@@ -511,3 +511,25 @@ class TestTabularResource(object):
         resource = TabularResource({'url': url})
         with pytest.raises(IOError):
             [row for row in resource.iter()]
+
+    def test_csv_dialect(self, csv_tmpfile):
+        csv_contents = (
+            'country;value\n'
+            'China;中国\n'
+            'Brazil;Brasil\n'
+        ).encode('utf-8')
+        csv_tmpfile.write(csv_contents)
+        csv_tmpfile.flush()
+
+        resource = TabularResource({
+            'path': csv_tmpfile.name,
+            'dialect': {
+                'delimiter': ';',
+            },
+        })
+        data = [row for row in resource.iter()]
+
+        assert data == [
+            {'country': 'China', 'value': '中国'},
+            {'country': 'Brazil', 'value': 'Brasil'},
+        ]
